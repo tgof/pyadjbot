@@ -12,7 +12,7 @@ import os
 
 
 bot = telebot.TeleBot(config.token)
-admin_id = 91531717
+admin_id = config.admin_id
 shell_enable = 0
 
 
