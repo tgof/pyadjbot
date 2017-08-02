@@ -3,17 +3,18 @@
 import config
 import telebot
 import socket
-import threading
 import datetime
 import time
 import sys
 import traceback
 import os
+import threading
 
 
 bot = telebot.TeleBot(config.token)
 admin_id = config.admin_id
 shell_enable = 0
+log_lock = threading.Lock()
 
 
 def my_server():
@@ -37,7 +38,14 @@ my_func_thread.start()
 
 
 def log(message):
-    print(str(datetime.datetime.now()) + ' ' + message.from_user.first_name + ' ' + message.from_user.last_name + u'id:' + str(message.chat.id) + u' написал \"' + message.text + '\"')
+    user = message.from_user
+    line = str(datetime.datetime.now()) + ' ' + user.first_name + ' ' + user.last_name + u' id:' + str(user.id) + u' написал \"' + message.text + '\"\n'
+    line = line.encode('utf8')
+    log_lock.acquire()
+    f = open('log.txt', 'a')
+    f.write(line)
+    f.close()
+    log_lock.release()
 
 
 @bot.message_handler(commands=['ssh'])
