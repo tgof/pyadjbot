@@ -37,9 +37,15 @@ my_func_thread.daemon = True
 my_func_thread.start()
 
 
-def log(message):
-    user = message.from_user
-    line = str(datetime.datetime.now()) + ' ' + user.first_name + ' ' + user.last_name + u' id:' + str(user.id) + u' написал \"' + message.text + '\"\n'
+def log(message=None, error=None):
+    if message != None:
+        user = message.from_user
+        line = str(datetime.datetime.now()) + ' ' + user.first_name + ' ' + user.last_name + u' id:'\
+               + str(user.id) + u' написал \"' + message.text + '\"\n'
+    elif error != None:
+        line = str(datetime.datetime.now()) + ' ' + error + '\n'
+    else:
+        line = str(datetime.datetime.now()) + ' log with empty params'
     line = line.encode('utf8')
     log_lock.acquire()
     f = open('log.txt', 'a')
@@ -69,16 +75,19 @@ def repeat_all_messages(message):
                 bot.send_message(message.chat.id, u'Команда вернула пустую строку')
         except Exception:
             exc_type, exc_value, exc_traceback = sys.exc_info()
+            log(error=str(exc_type) + ' ' + str(exc_value))
             bot.send_message(message.chat.id, u'Ошибочка ' + str(exc_type) + ' ' + str(exc_value))
             traceback.print_tb(exc_traceback, limit=3, file=sys.stdout)
 
 
 def main_loop():
     try:
+        print('Poling starting')
         bot.polling(none_stop=True)
     except Exception:
-        e = sys.exc_info()
-        print(e)
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        log(error=str(exc_type) + ' ' + str(exc_value))
+        print('Poling stoped')
         bot.stop_polling()
         return -1
     return 0
@@ -88,4 +97,5 @@ if __name__ == '__main__':
     statement = -1
     while statement == -1:
          statement = main_loop()
+         time.sleep(1)
 
