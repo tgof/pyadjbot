@@ -38,11 +38,11 @@ my_func_thread.start()
 
 
 def log(message=None, error=None):
-    if message != None:
+    if message is not None:
         user = message.from_user
         line = str(datetime.datetime.now()) + ' ' + user.first_name + ' ' + user.last_name + u' id:'\
-               + str(user.id) + u' написал \"' + message.text + '\"\n'
-    elif error != None:
+            + str(user.id) + u' написал \"' + message.text + '\"\n'
+    elif error is not None:
         line = str(datetime.datetime.now()) + ' ' + error + '\n'
     else:
         line = str(datetime.datetime.now()) + ' log with empty params'
@@ -54,12 +54,34 @@ def log(message=None, error=None):
     log_lock.release()
 
 
+def quiting():
+    bot.stop_polling()
+    print(str(datetime.datetime.now()) + ' Poling stoped')
+
+
 @bot.message_handler(commands=['ssh'])
 def command_answer(message):
     global shell_enable
     log(message)
     if message.from_user.id == admin_id:
         shell_enable ^= 1
+
+
+@bot.message_handler(commands=['exit'])
+def command_answer(message):
+    log(message)
+    if message.from_user.id == admin_id:
+        bot.send_message(message.chat.id, u'Выключаюсь')
+        quiting()
+        sys.exit(0)
+
+
+@bot.message_handler(commands=[u'пошёл_вон'])
+def command_answer(message):
+    log(message)
+    bot.send_message(message.chat.id, u'Сам ты пошёл')
+    if message.from_user.id == admin_id and str(message.chat.type) != 'private':
+        bot.leave_chat(message.chat.id)
 
 
 @bot.message_handler(content_types=["text"])
@@ -82,20 +104,19 @@ def repeat_all_messages(message):
 
 def main_loop():
     try:
-        print('Poling starting')
+        print(str(datetime.datetime.now()) + ' Poling starting')
+        bot._TeleBot__skip_updates()
         bot.polling(none_stop=True)
     except Exception:
         exc_type, exc_value, exc_traceback = sys.exc_info()
         log(error=str(exc_type) + ' ' + str(exc_value))
-        print('Poling stoped')
-        bot.stop_polling()
+        bot.send_message(admin_id, 'Я в беде!')
+        quiting()
         return -1
     return 0
 
 
 if __name__ == '__main__':
-    statement = -1
-    while statement == -1:
-         statement = main_loop()
-         time.sleep(1)
+    ret = main_loop()
+    sys.exit(-1)
 
