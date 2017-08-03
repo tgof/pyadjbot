@@ -40,7 +40,15 @@ my_func_thread.start()
 def log(message=None, error=None):
     if message is not None:
         user = message.from_user
-        line = str(datetime.datetime.now()) + ' ' + user.first_name + ' ' + user.last_name + u' id:'\
+        first_name = user.first_name
+        if first_name is None:
+            first_name = 'None'
+        first_name = first_name.encode('utf-8').decode('utf-8')
+        last_name = user.last_name
+        if last_name is None:
+            last_name = 'None'
+        last_name = last_name.encode('utf-8').decode('utf-8')
+        line = str(datetime.datetime.now()) + ' ' + first_name + ' ' + last_name + u' id:'\
             + str(user.id) + u' написал \"' + message.text + '\"\n'
     elif error is not None:
         line = str(datetime.datetime.now()) + ' ' + error + '\n'
