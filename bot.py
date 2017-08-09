@@ -49,7 +49,7 @@ def log(message=None, error=None):
             last_name = 'None'
         last_name = last_name.encode('utf-8').decode('utf-8')
         line = str(datetime.datetime.now()) + ' ' + first_name + ' ' + last_name + u' id:'\
-            + str(user.id) + u' написал \"' + message.text + '\"\n'
+            + str(user.id) +u' в чат id: ' + str(message.chat.id) + u' написал \"' + message.text + '\"\n'
     elif error is not None:
         line = str(datetime.datetime.now()) + ' ' + error + '\n'
     else:
