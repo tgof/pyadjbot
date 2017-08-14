@@ -92,6 +92,17 @@ def command_answer(message):
         bot.leave_chat(message.chat.id)
 
 
+@bot.message_handler(commands=['gull'])
+def command_answer(message):
+    log(message)
+    if message.from_user.id == admin_id:
+        ret = os.popen('git pull').read()
+        bot.send_message(message.chat.id, ret)
+        if ret != 'Already up-to-date.':
+            quiting()
+            sys.exit(1)
+
+
 @bot.message_handler(content_types=["text"])
 def repeat_all_messages(message):
     log(message)
