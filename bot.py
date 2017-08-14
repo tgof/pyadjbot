@@ -110,8 +110,9 @@ def repeat_all_messages(message):
         try:
             f = os.popen(message.text)
             res = f.read()
-            if str(res) != '':
-                bot.send_message(message.chat.id, str(res))
+            res = res.decode('utf-8').encode('utf-8')
+            if res != '':
+                bot.send_message(message.chat.id, res)
             else:
                 bot.send_message(message.chat.id, u'Команда вернула пустую строку')
         except Exception:
