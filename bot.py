@@ -84,6 +84,15 @@ def command_answer(message):
         sys.exit(0)
 
 
+@bot.message_handler(commands=['restart'])
+def command_answer(message):
+    log(message)
+    if message.from_user.id == admin_id:
+        bot.send_message(message.chat.id, u'Перезапускаюсь')
+        quiting()
+        sys.exit(1)
+
+
 @bot.message_handler(commands=[u'пошёл_вон'])
 def command_answer(message):
     log(message)
